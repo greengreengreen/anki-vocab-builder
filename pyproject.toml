@@ -1,0 +1,41 @@
+[tool.poetry]
+name = "anki-vocab-builder"
+version = "0.1.0"
+description = ""
+authors = ["greengreengreen <gxxuan71@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pandas = "^2.2.3"
+genanki = "^0.13.1"
+requests = "^2.32.3"
+pynput = "^1.7.7"
+gtts = "^2.5.4"
+pystray = "^0.19.5"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+addopts = "-v --cov=anki_vocab_builder --cov-report=term-missing"
+
+[tool.coverage.run]
+source = ["anki_vocab_builder"]
+omit = ["tests/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if __name__ == .__main__.:",
+    "raise NotImplementedError",
+    "pass",
+    "raise ImportError"
+]

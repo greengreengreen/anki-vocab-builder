@@ -1,0 +1,4 @@
+venv/
+*.apkg
+*.csv
+*.DS_Store
