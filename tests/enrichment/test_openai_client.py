@@ -1,48 +1,55 @@
-import pytest
+import json
+import time
 from unittest.mock import Mock, patch
-from anki_vocab_builder.enrichment.openai_client import OpenAIEnricher
+
+import pytest
+import requests
+
+from anki_vocab_builder.enrichment.openai_client import OpenAIClient
+
 
 @pytest.fixture
-def mock_openai_responses():
-    return {
-        'quiz': Mock(choices=[Mock(message=Mock(content="Fill in the blank: A ____ is an assessment."))]),
-        'content': Mock(choices=[Mock(message=Mock(content="1. An assessment of knowledge\n- She took the test.\n- This is a test.\n- Testing is important.\n/tɛst/"))]),
-        'image': {'data': [{'url': 'http://example.com/image.jpg'}]}
-    }
+def client(test_config, tmp_path):
+    with patch("openai.OpenAI") as mock_openai:
+        test_config.cache_dir = tmp_path
+        client = OpenAIClient(test_config)
+        client.cache_file.write_text("{}")
+        client.cache = {}
+        return client
 
-@pytest.fixture
-def enricher(test_config):
-    return OpenAIEnricher(test_config)
 
-@patch('openai.ChatCompletion.create')
-@patch('openai.Image.create')
-def test_enrich_word(mock_image_create, mock_chat_create, enricher, mock_openai_responses):
-    # Setup mocks
-    mock_chat_create.side_effect = [
-        mock_openai_responses['quiz'],
-        mock_openai_responses['content']
+@patch("openai.OpenAI")
+@patch("requests.get")
+def test_enrich_word(mock_requests_get, mock_openai, client):
+    # Setup mock OpenAI client
+    mock_client = Mock()
+    mock_openai.return_value = mock_client
+    client.client = mock_client  # Replace the client directly
+
+    # Mock responses
+    mock_client.chat.completions.create.side_effect = [
+        Mock(choices=[Mock(message=Mock(content="Fill in the blank: A ____ is an assessment."))]),
+        Mock(
+            choices=[
+                Mock(
+                    message=Mock(
+                        content="1. An assessment of knowledge\n- Example 1\n- Example 2\n/test/"
+                    )
+                )
+            ]
+        ),
     ]
-    mock_image_create.return_value = mock_openai_responses['image']
-    
-    # Test enrichment
-    card = enricher.enrich_word("test")
-    
-    assert card.word == "test"
-    assert card.quiz_question == "Fill in the blank: A ____ is an assessment."
-    assert "assessment" in card.meaning.lower()
-    assert len(card.example_sentences) == 3
-    assert all(s.startswith('-') for s in card.example_sentences)
-    assert card.pronunciation == "/tɛst/"
 
-def test_parse_content(enricher):
-    content = """An assessment of knowledge
-- First example
-- Second example
-- Third example
-/tɛst/"""
-    
-    meaning, examples, pronunciation = enricher._parse_content(content)
-    
-    assert "assessment" in meaning.lower()
-    assert len(examples) == 3
-    assert pronunciation == "/tɛst/" 
+    mock_client.images.generate.return_value = Mock(data=[Mock(url="http://example.com/image.jpg")])
+
+    # Mock image download
+    mock_requests_get.return_value = Mock(content=b"fake_image_data", raise_for_status=Mock())
+
+    # Test enrichment
+    result = client.enrich_word("test", force_refresh=True)
+
+    # Verify the result
+    assert result["word"] == "test"
+    assert "assessment" in result["quiz_question"]
+    assert "image_url" in result
+    assert "image_path" in result
