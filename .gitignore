@@ -1,4 +1,9 @@
+cache/
 venv/
 *.apkg
 *.csv
 *.DS_Store
+*.env
+.*
+*.json
+*.pyc
