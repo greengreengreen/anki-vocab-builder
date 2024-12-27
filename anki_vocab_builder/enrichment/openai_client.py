@@ -10,13 +10,14 @@ from anki_vocab_builder.enrichment.openai_prompts import BATCH_SYSTEM_PROMPT, BA
 
 
 class OpenAIClient:
-    def __init__(self, api_key: str, cache_dir: Path = None):
+    def __init__(self, api_key: str, batch_size: int = 10, cache_dir: Path = None):
         """Initialize OpenAI client with API key and optional cache directory."""
         self.client = OpenAI(api_key=api_key)
         self.cache_dir = cache_dir or Path(".cache")
         self.cache_dir.mkdir(parents=True, exist_ok=True)
         self.cache_file = self.cache_dir / "openai_cache.json"
         self.cache = self._load_cache()
+        self.batch_size = batch_size
 
     def _load_cache(self) -> Dict:
         """Load cache from file or create new cache."""
@@ -36,11 +37,10 @@ class OpenAIClient:
     def process_kindle_highlights(self, clippings_path: Path) -> List[Dict[str, Any]]:
         """Process Kindle highlights and generate quizzes with caching."""
         highlights = parse_kindle_clippings(clippings_path)
-        batch_size = 10
         all_quizzes = []
         
-        for i in tqdm.tqdm(range(0, len(highlights), batch_size)):
-            batch = highlights[i:i + batch_size]
+        for i in tqdm.tqdm(range(0, len(highlights), self.batch_size)):
+            batch = highlights[i:i + self.batch_size]
             cache_key = self._get_cache_key(batch)
             
             # Check cache first
