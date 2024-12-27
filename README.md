@@ -1,192 +1,104 @@
 # Anki Vocab Builder
 
-A tool to convert Kindle highlights into Anki flashcards using GPT-4, with beautiful modern card designs.
+> Transform your Kindle highlights into beautiful, AI-powered Anki flashcards
 
-## Features
+## ✨ Features
 
-- **Smart Card Generation**
-  - Automatically creates two types of cards:
-    - Fill-in-blank for vocabulary learning
-    - Q&A for concept understanding
-  - Beautiful modern card design with responsive layout
-  - Consistent typography and color scheme
+### 🎯 Smart Card Generation
+- **Two Card Types:**
+  - 📝 Fill-in-blank for vocabulary mastery
+  - 🤔 Q&A for deeper concept understanding
+- **Modern Design:**
+  - Responsive layout
+  - Clean typography
+  - Consistent color scheme
 
-- **Kindle Integration**
-  - Direct import from Kindle's "My Clippings.txt"
-  - Preserves book context and citations
-  - Batch processing with caching support
+### 📱 Kindle Integration
+- Direct import from "My Clippings.txt"
+- Preserves book context and citations
+- Smart batch processing with caching
 
-- **Enhanced Learning Content**
-  - Vocabulary cards include:
-    - Contextual examples
-    - Word families
-    - Synonyms and antonyms
-    - Clear definitions
-  - Concept cards include:
-    - Related concepts
-    - Key terms with definitions
-    - Supporting quotes from source
+### 🧠 Enhanced Learning
+- **Vocabulary Cards Include:**
+  - Contextual examples
+  - Word families
+  - Synonyms & antonyms
+  - Clear definitions
+- **Concept Cards Include:**
+  - Related concepts
+  - Key term definitions
+  - Supporting quotes
 
-## Quick Start
+## 🚀 Quick Start
 
-1. Install dependencies:
+1. **Install Poetry:**
    ```bash
-   python -m venv venv
-   source venv/bin/activate  # or venv\Scripts\activate on Windows
-   pip install -r requirements.txt
+   curl -sSL https://install.python-poetry.org | python3 -
    ```
 
-2. Set up your OpenAI API key:
+2. **Clone & Setup:**
    ```bash
+   git clone https://github.com/yourusername/anki-vocab-builder.git
+   cd anki-vocab-builder
+   poetry install
+   ```
+
+3. **Set Environment:**
+   ```bash
+   poetry shell
    export OPENAI_API_KEY='your-api-key-here'
    ```
 
-3. Copy your Kindle's "My Clippings.txt" to the input folder:
+4. **Import Kindle Highlights:**
    ```bash
    mkdir -p .anki_vocab_builder/input/kindle
    cp /path/to/My\ Clippings.txt .anki_vocab_builder/input/kindle/
    ```
 
-4. Generate Anki cards:
+5. **Generate Cards:**
    ```bash
    python -m anki_vocab_builder
    ```
 
-5. Import the generated deck (output/kindle_highlights.apkg) into Anki
+6. **Import into Anki** - Find your deck at `output/kindle_highlights.apkg`
 
-## Card Types
+## 🎨 Card Types
 
 ### Type-In Cards (Vocabulary Focus)
+<p align="center">
+  <img src="docs/assets/type-in-card.png" alt="Type-In Card Example" width="400">
+</p>
+
 - Front shows context with blank word
 - Back includes:
-  - Correct answer with typing feedback
-  - Word definition and usage examples
-  - Synonyms and antonyms
+  - Typing feedback
+  - Word definition & usage
+  - Synonyms & antonyms
   - Complete word family
 
 ### Q&A Cards (Concept Focus)
+<p align="center">
+  <img src="docs/assets/qa-card.png" alt="Q&A Card Example" width="400">
+</p>
+
 - Front shows conceptual question
 - Back includes:
   - Concise answer
-  - Supporting quotes from source
-  - Related key terms and concepts
+  - Supporting quotes
+  - Related concepts
   - Additional context
 
-## Project Structure
-
-```
-anki_vocab_builder/
-├── anki_vocab_builder/      # Main package
-│   ├── card_generator/     # Anki card generation
-│   ├── enrichment/        # OpenAI integration
-│   ├── parsers/          # Kindle highlights parsing
-│   └── storage/          # Quiz models
-├── tests/                # Test suite
-└── input/               # Place for My Clippings.txt
-```
-
-### Development Setup
-
-1. Clone and set up development environment:
-   ```bash
-   git clone https://github.com/yourusername/vocab-builder.git
-   cd vocab-builder
-   python -m venv venv
-   source venv/bin/activate  # or venv\Scripts\activate on Windows
-   pip install -r requirements.txt
-   ```
-
-2. Run tests:
-   ```bash
-   pytest tests/
-   ```
-
-3. Format code:
-   ```bash
-   black vocab_builder/
-   ```
-
-### Contributing
-
-1. Fork the repository
-2. Create your feature branch:
-   ```bash
-   git checkout -b feature/amazing-feature
-   ```
-3. Commit your changes:
-   ```bash
-   git commit -m 'Add amazing feature'
-   ```
-4. Push to the branch:
-   ```bash
-   git push origin feature/amazing-feature
-   ```
-5. Open a Pull Request
-
-### Development Guidelines
-
-- Follow PEP 8 style guide
-- Add tests for new features
-- Update documentation as needed
-- Use type hints in Python code
-- Handle errors gracefully
-
-## Core Components
-
-### Word Collector
-- Runs in system tray
-- Monitors clipboard
-- Saves words to CSV storage
-- Preserves original context
-
-### Card Generator
-- Processes collected words
-- Fetches definitions and examples
-- Generates audio pronunciations
-- Creates Anki cards
-
-## Roadmap
+## 🗺️ Roadmap
 
 - [x] Kindle highlights integration
-- [x] Modern card design with responsive layout
-- [x] GPT-4 powered quiz generation
-- [ ] iOS reading app integration
-- [ ] Audio pronunciation support
-- [ ] Custom dictionary sources
-- [ ] GUI for word management
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- Free Dictionary API for definitions
-- Anki for spaced repetition
-- gTTS for audio generation
-
-## Troubleshooting
-
-### Common Issues
-
-1. System tray icon not appearing
-   - Check if your system supports system tray icons
-   - Try running with administrator privileges
-
-2. Keyboard shortcut not working
-   - Verify no other app is using Ctrl+Shift+A
-   - Check keyboard permissions on your OS
-
-3. Anki card generation failing
-   - Verify internet connection for API calls
-   - Check if Anki is closed while importing
-
-For more issues, please check the [Issues](https://github.com/yourusername/vocab-builder/issues) page.
-
-## Support
-
-- Open an issue for bugs or feature requests
-- Check existing issues before opening new ones
-- Provide detailed information when reporting bugs
+- [x] Modern card design
+- [x] GPT-4 powered generation
+- [ ] Deduplication support
+- [ ] Clipboard integration
+- [ ] Audio pronunciation
 
 ---
+
+<p align="center">
+  Made with ❤️ for lifelong learners
+</p>
