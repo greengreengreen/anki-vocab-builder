@@ -3,9 +3,10 @@ from typing import List, Dict, Any
 import json
 import os
 from openai import OpenAI
+import tqdm
 
-from ..parsers.kindle_highlights import parse_kindle_clippings
-from .openai_prompts import BATCH_SYSTEM_PROMPT, BATCH_USER_PROMPT
+from anki_vocab_builder.parsers.kindle_highlights import parse_kindle_clippings
+from anki_vocab_builder.enrichment.openai_prompts import BATCH_SYSTEM_PROMPT, BATCH_USER_PROMPT
 
 
 class OpenAIClient:
@@ -35,10 +36,10 @@ class OpenAIClient:
     def process_kindle_highlights(self, clippings_path: Path) -> List[Dict[str, Any]]:
         """Process Kindle highlights and generate quizzes with caching."""
         highlights = parse_kindle_clippings(clippings_path)
-        batch_size = 5
+        batch_size = 10
         all_quizzes = []
         
-        for i in range(0, len(highlights), batch_size):
+        for i in tqdm.tqdm(range(0, len(highlights), batch_size)):
             batch = highlights[i:i + batch_size]
             cache_key = self._get_cache_key(batch)
             
@@ -47,22 +48,26 @@ class OpenAIClient:
                 all_quizzes.extend(self.cache[cache_key])
                 continue
                 
-            formatted_highlights = "\n\n".join(
-                f"Highlight {j+1}:\n{highlight}\nSource: {source}"
-                for j, (highlight, source) in enumerate(batch)
+            formatted_highlights = " \n\n ".join(
+                f"Highlight {j+1}: \n {highlight} \n Source: {source}"
+                for j, (highlight, source, _) in enumerate(batch)
             )
             
             try:
                 response = self.client.chat.completions.create(
-                    model="gpt-4",
+                    model="gpt-4o",
                     messages=[
                         {"role": "system", "content": BATCH_SYSTEM_PROMPT},
                         {"role": "user", "content": BATCH_USER_PROMPT.format(highlights=formatted_highlights)}
                     ],
-                    response_format={"type": "json_object"}
+                    response_format={"type": "text"}
                 )
-                
-                result = json.loads(response.choices[0].message.content)
+                content = response.choices[0].message.content
+
+                start_index = content.find("[")
+                end_index = content.rfind("]") + 1
+                json_str = content[start_index:end_index]
+                result = json.loads(json_str)
                 if isinstance(result, list):
                     self.cache[cache_key] = result
                     all_quizzes.extend(result)
@@ -78,3 +83,9 @@ class OpenAIClient:
                 continue
                 
         return all_quizzes
+    
+
+if __name__ == "__main__":
+    client = OpenAIClient(api_key=os.getenv("OPENAI_API_KEY"))
+    res = client.process_kindle_highlights(Path(".anki_vocab_builder/input/kindle/My Clippings.txt"))
+    print(res)

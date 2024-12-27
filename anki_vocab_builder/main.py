@@ -1,9 +1,9 @@
 from pathlib import Path
 
-from .card_generator.anki_generator import AnkiGenerator
-from .config import Config
-from .enrichment.openai_client import OpenAIClient
-from .parsers.quiz_parser import QuizParser
+from anki_vocab_builder.card_generator.anki_generator import AnkiGenerator
+from anki_vocab_builder.config import Config
+from anki_vocab_builder.enrichment.openai_client import OpenAIClient
+from anki_vocab_builder.parsers.quiz_parser import QuizParser
 
 
 def main():
@@ -14,14 +14,14 @@ def main():
         print("Error: OpenAI API key not found")
         return
         
-    clippings_path = Path("input/My Clippings.txt")
+    clippings_path = Path(".anki_vocab_builder/input/kindle/My Clippings.txt")
     if not clippings_path.exists():
         print(f"Error: Kindle clippings file not found at {clippings_path}")
         return
         
     openai_client = OpenAIClient(config.openai_api_key)
     quiz_parser = QuizParser()
-    anki_generator = AnkiGenerator(Path("output/kindle_highlights.apkg"))
+    anki_generator = AnkiGenerator(Path(".anki_vocab_builder/output/kindle_highlights.apkg"))
     
     try:
         quiz_data = openai_client.process_kindle_highlights(clippings_path)

@@ -13,14 +13,27 @@ sample_data = [
         "answer": "person",
         "source": "Test Book (Author)",
         "meaning": "A human being",
-        "examples": ["The person was friendly.", "Many people attended the event."]
+        "examples": ["The person was friendly.", "Many people attended the event."],
+        "synonyms": ["individual", "human", "being"],
+        "antonyms": ["group", "crowd"],
+        "word_family": {
+            "noun": ["person", "persons", "people"],
+            "adjective": ["personal"],
+            "adverb": ["personally"]
+        }
     },
     {
         "type": "qa",
         "question": "What is the capital of France?",
         "answer": "Paris",
         "source": "History Book (Author)",
-        "quotes": ["The capital of France is Paris.", "Paris is the capital of France."]
+        "quotes": ["The capital of France is Paris.", "Paris is the capital of France."],
+        "key_terms": [{
+            "term": "capital",
+            "definition": "The city that functions as the seat of government",
+            "usage": "Paris has been the capital of France since 508 CE"
+        }],
+        "related_concepts": ["government", "city planning", "cultural centers"]
     }
 ]
 

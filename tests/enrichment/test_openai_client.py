@@ -61,10 +61,10 @@ def sample_highlights():
     return [
         ("If you haven't decided what to master, pick anything that scares you, fascinates you, or infuriates you.",
          "How to Live (Sivers, Derek)",
-         "24-09-21"),
+         "2024-09-21"),
         ("The layman's understanding of quantum mechanics is quite different from reality.",
          "Some Physics Book (Author)",
-         "24-09-21")
+         "2024-09-21")
     ]
 
 
@@ -76,6 +76,8 @@ def test_process_kindle_highlights(mock_openai, client, sample_highlights):
     
     # Mock response with both quiz types
     mock_response = Mock()
+    mock_response.choices = [Mock()]
+    mock_response.choices[0].message = Mock()
     mock_response.choices[0].message.content = json.dumps([
         {
             "type": "qa",

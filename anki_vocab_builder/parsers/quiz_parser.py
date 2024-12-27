@@ -13,14 +13,19 @@ class QuizParser:
                 answer=gpt_response["answer"],
                 source=gpt_response["source"],
                 meaning=gpt_response.get("meaning"),
-                examples=gpt_response.get("examples", [])
+                examples=gpt_response.get("examples", []),
+                synonyms=gpt_response.get("synonyms", []),
+                antonyms=gpt_response.get("antonyms", []),
+                word_family=gpt_response.get("word_family", {})
             )
         elif quiz_type == "qa":
             return QAQuiz(
                 question=gpt_response["question"],
                 answer=gpt_response["answer"],
                 source=gpt_response["source"],
-                quotes=gpt_response.get("quotes", [])
+                quotes=gpt_response.get("quotes", []),
+                key_terms=gpt_response.get("key_terms", []),
+                related_concepts=gpt_response.get("related_concepts", [])
             )
         else:
             raise ValueError(f"Unknown quiz type: {quiz_type}")

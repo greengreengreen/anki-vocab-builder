@@ -25,7 +25,7 @@ If you haven't decided what to master, pick anything that scares you.
 def test_parse_date():
     date_str = "Saturday, September 21, 2024 9:41:08 PM"
     result = parse_date(date_str)
-    assert result == "24-09-21"
+    assert result == "2024-09-21"
 
 
 def test_parse_date_invalid():
@@ -42,7 +42,7 @@ def test_parse_kindle_clippings(sample_clippings_file):
     
     assert highlight == "The data showed no correlation whatsoever between experience and performance."
     assert source == "Mythical Man-Month, The (Brooks Jr., Frederick P.)"
-    assert date == "24-09-21"
+    assert date == "2024-09-21"
 
 
 def test_format_highlight():

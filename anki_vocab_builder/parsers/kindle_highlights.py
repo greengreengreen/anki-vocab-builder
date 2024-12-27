@@ -4,15 +4,11 @@ from datetime import datetime
 
 
 def parse_date(date_str: str) -> str:
-    """
-    Parse date string from Kindle format to 'YY-MM-DD'.
-    Example: 'Saturday, September 21, 2024 9:41:08 PM' -> '2024-09-21'
-    """
+    """Parse date string from Kindle format to YYYY-MM-DD"""
     try:
-        date_obj = datetime.strptime(date_str, "%A, %B %d, %Y %I:%M:%S %p")
-        return date_obj.strftime("%Y-%m-%d")
-    except ValueError as e:
-        print(f"Error parsing date {date_str}: {e}")
+        date = datetime.strptime(date_str, "%A, %B %d, %Y %I:%M:%S %p")
+        return date.strftime("%Y-%m-%d")
+    except ValueError:
         return ""
 
 

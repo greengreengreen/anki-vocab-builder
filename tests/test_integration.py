@@ -9,17 +9,20 @@ from anki_vocab_builder.main import main
 
 @pytest.fixture
 def setup_test_environment(tmp_path):
-    # Create test config
+    # Create test config and input directory
+    input_dir = tmp_path / "input"
+    input_dir.mkdir(parents=True)
+    clippings_file = input_dir / "My Clippings.txt"
+    
     config = {
         "openai_api_key": "test_key",
-        "kindle_clippings": str(tmp_path / "My Clippings.txt"),
+        "kindle_clippings": str(clippings_file),
         "deck_name": "Test Deck",
         "cache_dir": str(tmp_path / "cache")
     }
     
-    # Create test clippings file with proper format
-    clippings = tmp_path / "My Clippings.txt"
-    clippings.write_text('''Mythical Man-Month, The (Brooks Jr., Frederick P.)
+    # Create test clippings file
+    clippings_file.write_text('''Mythical Man-Month, The (Brooks Jr., Frederick P.)
 - Your Highlight on page 45 | Location 484-485 | Added on Saturday, September 21, 2024 9:41:08 PM
 
 The data showed no correlation whatsoever between experience and performance.
