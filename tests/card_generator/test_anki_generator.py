@@ -1,37 +1,42 @@
 from pathlib import Path
 
 import pytest
+from unittest.mock import Mock, patch
+import genanki
 
 from anki_vocab_builder.card_generator.anki_generator import AnkiGenerator
+from anki_vocab_builder.storage.models import TypeInQuiz
 
 
 @pytest.fixture
-def anki_generator(test_config, tmp_path):
-    output_dir = tmp_path / "output"
-    output_dir.mkdir(parents=True, exist_ok=True)
-    output_path = output_dir / "test_output.apkg"
-    # Ensure parent directory exists
-    output_path.parent.mkdir(parents=True, exist_ok=True)
+def output_path(tmp_path):
+    return tmp_path / "test_deck.apkg"
+
+
+@pytest.fixture
+def generator(output_path):
     return AnkiGenerator(output_path)
 
 
-def test_generate_deck(anki_generator, sample_vocab_card):
-    # Test deck generation with a single card
-    deck_name = "Test Deck"
-    anki_generator.generate_deck([sample_vocab_card], deck_name=deck_name)
-
-    assert anki_generator.output_path.exists()
-    assert anki_generator.output_path.stat().st_size > 0
-
-
-def test_generate_empty_deck(anki_generator):
-    # Test generating deck with no cards
-    anki_generator.generate_deck([])
-    assert anki_generator.output_path.exists()
+@pytest.fixture
+def sample_type_in_quiz():
+    return TypeInQuiz(
+        question="Test question?",
+        answer="Test answer",
+        source="Test Source"
+    )
 
 
-def test_deck_model_fields(anki_generator):
-    # Test that the model has all required fields
-    expected_fields = {"Word", "Quiz", "Meaning", "Examples", "Pronunciation", "Image", "Audio"}
-    model_fields = {field["name"] for field in anki_generator.model.fields}
-    assert model_fields == expected_fields
+@pytest.mark.parametrize("quiz_class,expected_fields", [
+    (TypeInQuiz, ["Question", "Answer", "Source", "Meaning", "Examples"]),
+])
+def test_model_fields(generator, quiz_class, expected_fields):
+    quiz = quiz_class(
+        question="Test question?",
+        answer="Test answer",
+        source="Test Source"
+    )
+    model = generator._get_or_create_model(quiz)
+    
+    actual_fields = [field["name"] for field in model.fields]
+    assert actual_fields == expected_fields

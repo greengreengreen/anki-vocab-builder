@@ -1,58 +1,41 @@
-from pathlib import Path
-from typing import List
-
 import genanki
-
-from ..storage.models import VocabCard
-
+from pathlib import Path
+from typing import List, Dict, Type
+from ..storage.models import BaseQuiz
+from .model_templates import ModelTemplates
 
 class AnkiGenerator:
     def __init__(self, output_path: Path):
         self.output_path = output_path
-        self.model = genanki.Model(
-            1607392319,
-            "Vocab Model",
-            fields=[
-                {"name": "Word"},
-                {"name": "Quiz"},
-                {"name": "Meaning"},
-                {"name": "Examples"},
-                {"name": "Pronunciation"},
-                {"name": "Image"},
-                {"name": "Audio"},
-            ],
-            templates=[
-                {
-                    "name": "Card 1",
-                    "qfmt": "{{Quiz}}<br>{{Audio}}",
-                    "afmt": """
-                        {{FrontSide}}
-                        <hr id="answer">
-                        <b>Word:</b> {{Word}}<br>
-                        <b>Meaning:</b> {{Meaning}}<br>
-                        <b>Examples:</b> {{Examples}}<br>
-                        <b>Pronunciation:</b> {{Pronunciation}}<br>
-                        {{#Image}}<img src="{{Image}}">{{/Image}}
-                    """,
-                },
-            ],
-        )
+        self.models: Dict[Type[BaseQuiz], genanki.Model] = {}
+        
+    def _get_or_create_model(self, quiz: BaseQuiz) -> genanki.Model:
+        """Get existing model or create new one for quiz type"""
+        quiz_type = type(quiz)
+        
+        if quiz_type not in self.models:
+            template = ModelTemplates.get_template(quiz_type)
+            
+            self.models[quiz_type] = genanki.Model(
+                quiz.get_model_id(),
+                quiz.get_model_name(),
+                fields=[{"name": field} for field in quiz.get_fields()],
+                templates=[template],
+                css=ModelTemplates.get_css()
+            )
+            
+        return self.models[quiz_type]
 
-    def generate_deck(self, cards: List[VocabCard], deck_name: str = "Vocabulary") -> None:
+    def generate_deck(self, quizzes: List[BaseQuiz], deck_name: str = "Quiz Deck") -> None:
         deck = genanki.Deck(2059400110, deck_name)
-
-        for card in cards:
+        
+        for quiz in quizzes:
+            model = self._get_or_create_model(quiz)
+            
             note = genanki.Note(
-                model=self.model,
-                fields=[
-                    card.word,
-                    card.quiz_question,
-                    card.meaning,
-                    "<br>".join(card.example_sentences),
-                    card.pronunciation,
-                    str(card.image_path) if card.image_path else "",
-                    str(card.audio_path) if card.audio_path else "",
-                ],
+                model=model,
+                fields=quiz.get_field_values(),
+                tags=quiz.tags
             )
             deck.add_note(note)
 

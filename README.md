@@ -1,73 +1,56 @@
 # Anki Vocab Builder
 
-An automated tool to build your vocabulary with Anki flashcards. Easily collect words from any source (Kindle, web browsing, reading apps) and automatically generate comprehensive Anki cards with definitions, pronunciations, and example sentences.
+A tool to convert Kindle highlights into Anki flashcards using GPT-4.
 
 ## Features
 
-- **Easy Word Collection**
-  - Collect words with a simple keyboard shortcut (Ctrl+Shift+A)
-  - Works with any text you can highlight
-  - System tray app for convenient access
+- **Easy Import from Kindle**
+  - Simply copy your My Clippings.txt file to the input folder
+  - Automatically generates appropriate quiz types (fill-in-blank or Q&A)
+  - Preserves source context
 
-- **Rich Anki Cards**
-  - Definitions from reliable dictionary sources
-  - Audio pronunciations
-  - Example sentences
-  - Source context preservation
+- **Smart Quiz Generation**
+  - Uses GPT-4 to create meaningful questions
+  - Generates both vocabulary and concept-based cards
+  - Includes relevant quotes and examples
 
-## Quick Start for Users
+## Quick Start
 
-### Installation
-
-1. Ensure you have Python 3.8+ installed
-2. Clone this repository:
-   ```bash
-   git clone https://github.com/yourusername/vocab-builder.git
-   cd vocab-builder
-   ```
-
-3. Set up virtual environment and install dependencies:
+1. Install dependencies:
    ```bash
    python -m venv venv
-   
-   # On Windows:
-   venv\Scripts\activate
-   # On macOS/Linux:
-   source venv/bin/activate
-   
+   source venv/bin/activate  # or venv\Scripts\activate on Windows
    pip install -r requirements.txt
    ```
 
-### Usage
-
-1. Start the word collector:
+2. Set up your OpenAI API key:
    ```bash
-   python scripts/collect_words.py
+   cp .env.example .env
+   # Edit .env with your API key
    ```
-   - Look for the app icon in your system tray
-   - Highlight any word and press Ctrl+Shift+A to save it
 
-2. Generate Anki cards:
+3. Copy your Kindle's "My Clippings.txt" to the input folder
+
+4. Generate Anki cards:
    ```bash
-   python scripts/generate_cards.py
+   python -m anki_vocab_builder
    ```
-   - Find the generated Anki deck at `output/vocabulary.apkg`
-   - Import the deck into Anki
+
+5. Import the generated deck (output/kindle_highlights.apkg) into Anki
 
 ## For Developers
 
 ### Project Structure
 
 ```
-vocab-builder/
-├── vocab_builder/           # Main package
-│   ├── collectors/         # Word collection implementations
-│   ├── storage/           # Data storage handling
-│   ├── enrichment/        # Word data enrichment (definitions, audio)
-│   └── anki/              # Anki card generation
-├── tests/                  # Test suite
-├── scripts/               # CLI scripts
-└── output/                # Generated files
+anki_vocab_builder/
+├── anki_vocab_builder/      # Main package
+│   ├── card_generator/     # Anki card generation
+│   ├── enrichment/        # OpenAI integration
+│   ├── parsers/          # Kindle highlights parsing
+│   └── storage/          # Quiz models
+├── tests/                # Test suite
+└── input/               # Place for My Clippings.txt
 ```
 
 ### Development Setup

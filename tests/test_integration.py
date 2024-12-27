@@ -8,79 +8,53 @@ from anki_vocab_builder.main import main
 
 
 @pytest.fixture
-def setup_test_environment(tmp_path, test_config):
-    """Set up test environment with necessary files"""
-    # Create input file
-    input_file = Path(test_config.config["input_file"])
-    input_file.parent.mkdir(parents=True, exist_ok=True)
-    with open(input_file, "w") as f:
-        f.write("test\nword\nexample")
+def setup_test_environment(tmp_path):
+    # Create test config
+    config = {
+        "openai_api_key": "test_key",
+        "kindle_clippings": str(tmp_path / "My Clippings.txt"),
+        "deck_name": "Test Deck",
+        "cache_dir": str(tmp_path / "cache")
+    }
+    
+    # Create test clippings file with proper format
+    clippings = tmp_path / "My Clippings.txt"
+    clippings.write_text('''Mythical Man-Month, The (Brooks Jr., Frederick P.)
+- Your Highlight on page 45 | Location 484-485 | Added on Saturday, September 21, 2024 9:41:08 PM
 
-    # Create output directory
-    output_dir = Path(test_config.config["output_dir"])
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-    # Set up cache directory
-    test_config.cache_dir = tmp_path / "cache"
-    test_config.cache_dir.mkdir(parents=True, exist_ok=True)
-
-    return test_config
+The data showed no correlation whatsoever between experience and performance.
+==========''')
+    
+    return Mock(
+        config=config,
+        openai_api_key="test_key",
+        cache_dir=tmp_path / "cache"
+    )
 
 
 @patch("openai.OpenAI")
 def test_main_workflow(mock_openai, setup_test_environment, capsys):
     config = setup_test_environment
-
-    # Configure mock OpenAI client
+    
+    # Mock OpenAI response
     mock_client = Mock()
     mock_openai.return_value = mock_client
-
-    # Mock chat completions with proper response structure
     mock_client.chat.completions.create.return_value = Mock(
-        choices=[
-            Mock(
-                message=Mock(
-                    content=json.dumps(
-                        {
-                            "quiz_question": "Test quiz",
-                            "meaning": "Test meaning",
-                            "example_sentences": ["Example 1"],
-                            "pronunciation": "/test/",
-                        }
-                    )
-                )
-            )
-        ]
+        choices=[Mock(message=Mock(content=json.dumps([{
+            "type": "qa",
+            "question": "Test question?",
+            "answer": "Test answer",
+            "source": "Test Book",
+            "quotes": ["Test quote"]
+        }])))]
     )
-
-    # Mock image generation
-    mock_client.images.generate.return_value = Mock(data=[Mock(url="http://example.com/image.jpg")])
-
+    
     # Run main function
     with patch("anki_vocab_builder.main.Config", return_value=config):
-        with patch("requests.get") as mock_get:
-            mock_get.return_value = Mock(content=b"fake_data", raise_for_status=Mock())
-            # Create a list to store enriched data
-            enriched_data = []
-
-            # Mock OpenAIClient.enrich_word to return proper data structure
-            with patch(
-                "anki_vocab_builder.enrichment.openai_client.OpenAIClient.enrich_word"
-            ) as mock_enrich:
-                mock_enrich.return_value = {
-                    "word": "test",
-                    "quiz_question": "Test quiz",
-                    "meaning": "Test meaning",
-                    "example_sentences": ["Example 1"],
-                    "pronunciation": "/test/",
-                    "image_path": "test_image.jpg",
-                }
-                main()
-
-    # Check output
+        main()
+        
     captured = capsys.readouterr()
-    assert "Processing word: test" in captured.out
-    assert "Successfully processed: test" in captured.out
+    assert "Successfully created Anki deck" in captured.out
 
 
 def test_main_no_api_key(capsys):
