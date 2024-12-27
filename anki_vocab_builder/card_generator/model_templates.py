@@ -1,9 +1,11 @@
 from typing import Dict, Type
-from ..storage.models import BaseQuiz, TypeInQuiz, QAQuiz
+
+from ..storage.models import BaseQuiz, QAQuiz, TypeInQuiz
+
 
 class ModelTemplates:
     """Collection of Anki model templates"""
-    
+
     @staticmethod
     def get_template(quiz_type: Type[BaseQuiz]) -> Dict:
         """Get the appropriate template for a quiz type"""
@@ -39,7 +41,7 @@ class ModelTemplates:
                     {{#WordFamily}}
                     <div class="word-family">Word Family:<br>{{WordFamily}}</div>
                     {{/WordFamily}}
-                """
+                """,
             },
             QAQuiz: {
                 "name": "Q&A Card",
@@ -61,8 +63,8 @@ class ModelTemplates:
                     {{#RelatedConcepts}}
                     <div class="related">Related Concepts:<br>{{RelatedConcepts}}</div>
                     {{/RelatedConcepts}}
-                """
-            }
+                """,
+            },
         }
         return templates.get(quiz_type, {})
 

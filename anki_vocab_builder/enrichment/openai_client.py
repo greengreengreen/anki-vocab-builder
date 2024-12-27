@@ -1,12 +1,16 @@
-from pathlib import Path
-from typing import List, Dict, Any
 import json
 import os
-from openai import OpenAI
-import tqdm
+from pathlib import Path
+from typing import Any, Dict, List
 
+import tqdm
+from openai import OpenAI
+
+from anki_vocab_builder.enrichment.openai_prompts import (
+    BATCH_SYSTEM_PROMPT,
+    BATCH_USER_PROMPT,
+)
 from anki_vocab_builder.parsers.kindle_highlights import parse_kindle_clippings
-from anki_vocab_builder.enrichment.openai_prompts import BATCH_SYSTEM_PROMPT, BATCH_USER_PROMPT
 
 
 class OpenAIClient:
@@ -38,29 +42,32 @@ class OpenAIClient:
         """Process Kindle highlights and generate quizzes with caching."""
         highlights = parse_kindle_clippings(clippings_path)
         all_quizzes = []
-        
+
         for i in tqdm.tqdm(range(0, len(highlights), self.batch_size)):
-            batch = highlights[i:i + self.batch_size]
+            batch = highlights[i : i + self.batch_size]
             cache_key = self._get_cache_key(batch)
-            
+
             # Check cache first
             if cache_key in self.cache:
                 all_quizzes.extend(self.cache[cache_key])
                 continue
-                
+
             formatted_highlights = " \n\n ".join(
                 f"Highlight {j+1}: \n {highlight} \n Source: {source}"
                 for j, (highlight, source, _) in enumerate(batch)
             )
-            
+
             try:
                 response = self.client.chat.completions.create(
                     model="gpt-4o",
                     messages=[
                         {"role": "system", "content": BATCH_SYSTEM_PROMPT},
-                        {"role": "user", "content": BATCH_USER_PROMPT.format(highlights=formatted_highlights)}
+                        {
+                            "role": "user",
+                            "content": BATCH_USER_PROMPT.format(highlights=formatted_highlights),
+                        },
                     ],
-                    response_format={"type": "text"}
+                    response_format={"type": "text"},
                 )
                 content = response.choices[0].message.content
 
@@ -74,18 +81,20 @@ class OpenAIClient:
                 else:
                     self.cache[cache_key] = [result]
                     all_quizzes.append(result)
-                
+
                 # Save cache after each successful batch
                 self._save_cache()
-                    
+
             except Exception as e:
                 print(f"Error processing batch {i//batch_size + 1}: {str(e)}")
                 continue
-                
+
         return all_quizzes
-    
+
 
 if __name__ == "__main__":
     client = OpenAIClient(api_key=os.getenv("OPENAI_API_KEY"))
-    res = client.process_kindle_highlights(Path(".anki_vocab_builder/input/kindle/My Clippings.txt"))
+    res = client.process_kindle_highlights(
+        Path(".anki_vocab_builder/input/kindle/My Clippings.txt")
+    )
     print(res)

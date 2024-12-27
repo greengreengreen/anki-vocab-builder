@@ -28,7 +28,7 @@ class Config:
             "batch_size": 10,
             "force_refresh": False,
             "cache_max_age_days": 30,
-            "gpt_model": "gpt-4o"
+            "gpt_model": "gpt-4o",
         }
 
         self.save_config(default_config)
@@ -49,11 +49,15 @@ class Config:
 
     @property
     def input_path(self) -> Path:
-        return Path(self.config.get("input_path", ".anki_vocab_builder/input/kindle/My Clippings.txt"))
+        return Path(
+            self.config.get("input_path", ".anki_vocab_builder/input/kindle/My Clippings.txt")
+        )
 
     @property
     def output_path(self) -> Path:
-        return Path(self.config.get("output_path", ".anki_vocab_builder/output/kindle_highlights.apkg"))
+        return Path(
+            self.config.get("output_path", ".anki_vocab_builder/output/kindle_highlights.apkg")
+        )
 
     @property
     def batch_size(self) -> int:

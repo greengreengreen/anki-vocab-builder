@@ -1,6 +1,7 @@
 import pytest
+
 from anki_vocab_builder.parsers.quiz_parser import QuizParser
-from anki_vocab_builder.storage.models import TypeInQuiz, QAQuiz
+from anki_vocab_builder.storage.models import QAQuiz, TypeInQuiz
 
 
 @pytest.fixture
@@ -17,8 +18,8 @@ def type_in_quiz_data():
         "word_family": {
             "noun": ["person", "persons", "people"],
             "adjective": ["personal"],
-            "adverb": ["personally"]
-        }
+            "adverb": ["personally"],
+        },
     }
 
 
@@ -30,18 +31,20 @@ def qa_quiz_data():
         "answer": "The importance of persistence",
         "source": "Test Book (Author)",
         "quotes": ["Success comes from persistence.", "Never give up."],
-        "key_terms": [{
-            "term": "persistence",
-            "definition": "Continuing despite difficulties",
-            "usage": "His persistence led to success"
-        }],
-        "related_concepts": ["determination", "grit", "resilience"]
+        "key_terms": [
+            {
+                "term": "persistence",
+                "definition": "Continuing despite difficulties",
+                "usage": "His persistence led to success",
+            }
+        ],
+        "related_concepts": ["determination", "grit", "resilience"],
     }
 
 
 def test_parse_type_in_quiz(type_in_quiz_data):
     quiz = QuizParser.parse_quiz(type_in_quiz_data)
-    
+
     assert isinstance(quiz, TypeInQuiz)
     assert quiz.question == type_in_quiz_data["question"]
     assert quiz.answer == type_in_quiz_data["answer"]
@@ -55,7 +58,7 @@ def test_parse_type_in_quiz(type_in_quiz_data):
 
 def test_parse_qa_quiz(qa_quiz_data):
     quiz = QuizParser.parse_quiz(qa_quiz_data)
-    
+
     assert isinstance(quiz, QAQuiz)
     assert quiz.question == qa_quiz_data["question"]
     assert quiz.answer == qa_quiz_data["answer"]
@@ -70,11 +73,11 @@ def test_parse_quiz_with_missing_optional_fields():
         "type": "type_in",
         "question": "Test question?",
         "answer": "test",
-        "source": "Test Book"
+        "source": "Test Book",
     }
-    
+
     quiz = QuizParser.parse_quiz(data)
-    
+
     assert isinstance(quiz, TypeInQuiz)
     assert quiz.meaning is None
     assert quiz.examples == []
@@ -88,19 +91,19 @@ def test_parse_quiz_with_invalid_type():
         "type": "invalid_type",
         "question": "Test question?",
         "answer": "test",
-        "source": "Test Book"
+        "source": "Test Book",
     }
-    
+
     with pytest.raises(ValueError) as exc_info:
         QuizParser.parse_quiz(data)
-    
+
     assert "Unknown quiz type: invalid_type" in str(exc_info.value)
 
 
 def test_parse_quiz_list(type_in_quiz_data, qa_quiz_data):
     quiz_data = [type_in_quiz_data, qa_quiz_data]
     quizzes = QuizParser.parse_quiz_list(quiz_data)
-    
+
     assert len(quizzes) == 2
     assert isinstance(quizzes[0], TypeInQuiz)
     assert isinstance(quizzes[1], QAQuiz)
@@ -114,9 +117,9 @@ def test_parse_quiz_list_empty():
 def test_parse_quiz_missing_required_fields():
     data = {
         "type": "type_in",
-        "question": "Test question?"
+        "question": "Test question?",
         # Missing required 'answer' and 'source' fields
     }
-    
+
     with pytest.raises(KeyError):
-        QuizParser.parse_quiz(data) 
+        QuizParser.parse_quiz(data)

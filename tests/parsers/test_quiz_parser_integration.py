@@ -1,6 +1,7 @@
 from pathlib import Path
-from anki_vocab_builder.parsers.quiz_parser import QuizParser
+
 from anki_vocab_builder.card_generator.anki_generator import AnkiGenerator
+from anki_vocab_builder.parsers.quiz_parser import QuizParser
 
 # Define where you want to save the deck
 output_path = Path("./my_deck.apkg")
@@ -19,8 +20,8 @@ sample_data = [
         "word_family": {
             "noun": ["person", "persons", "people"],
             "adjective": ["personal"],
-            "adverb": ["personally"]
-        }
+            "adverb": ["personally"],
+        },
     },
     {
         "type": "qa",
@@ -28,13 +29,15 @@ sample_data = [
         "answer": "Paris",
         "source": "History Book (Author)",
         "quotes": ["The capital of France is Paris.", "Paris is the capital of France."],
-        "key_terms": [{
-            "term": "capital",
-            "definition": "The city that functions as the seat of government",
-            "usage": "Paris has been the capital of France since 508 CE"
-        }],
-        "related_concepts": ["government", "city planning", "cultural centers"]
-    }
+        "key_terms": [
+            {
+                "term": "capital",
+                "definition": "The city that functions as the seat of government",
+                "usage": "Paris has been the capital of France since 508 CE",
+            }
+        ],
+        "related_concepts": ["government", "city planning", "cultural centers"],
+    },
 ]
 
 # Parse and generate the deck
@@ -43,4 +46,4 @@ quizzes = parser.parse_quiz_list(sample_data)
 generator = AnkiGenerator(output_path)
 generator.generate_deck(quizzes, "My Test Deck")
 
-print(f"Deck created at: {output_path.absolute()}") 
+print(f"Deck created at: {output_path.absolute()}")

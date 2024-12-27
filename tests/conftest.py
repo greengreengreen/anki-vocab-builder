@@ -17,6 +17,6 @@ def test_config(tmp_path):
         "batch_size": 5,
         "force_refresh": True,
         "cache_max_age_days": 1,
-        "gpt_model": "gpt-4o"
+        "gpt_model": "gpt-4o",
     }
     return config
