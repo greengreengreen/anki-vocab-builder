@@ -1,18 +1,31 @@
 # Anki Vocab Builder
 
-A tool to convert Kindle highlights into Anki flashcards using GPT-4.
+A tool to convert Kindle highlights into Anki flashcards using GPT-4, with beautiful modern card designs.
 
 ## Features
 
-- **Easy Import from Kindle**
-  - Simply copy your My Clippings.txt file to the input folder
-  - Automatically generates appropriate quiz types (fill-in-blank or Q&A)
-  - Preserves source context
+- **Smart Card Generation**
+  - Automatically creates two types of cards:
+    - Fill-in-blank for vocabulary learning
+    - Q&A for concept understanding
+  - Beautiful modern card design with responsive layout
+  - Consistent typography and color scheme
 
-- **Smart Quiz Generation**
-  - Uses GPT-4 to create meaningful questions
-  - Generates both vocabulary and concept-based cards
-  - Includes relevant quotes and examples
+- **Kindle Integration**
+  - Direct import from Kindle's "My Clippings.txt"
+  - Preserves book context and citations
+  - Batch processing with caching support
+
+- **Enhanced Learning Content**
+  - Vocabulary cards include:
+    - Contextual examples
+    - Word families
+    - Synonyms and antonyms
+    - Clear definitions
+  - Concept cards include:
+    - Related concepts
+    - Key terms with definitions
+    - Supporting quotes from source
 
 ## Quick Start
 
@@ -25,11 +38,14 @@ A tool to convert Kindle highlights into Anki flashcards using GPT-4.
 
 2. Set up your OpenAI API key:
    ```bash
-   cp .env.example .env
-   # Edit .env with your API key
+   export OPENAI_API_KEY='your-api-key-here'
    ```
 
-3. Copy your Kindle's "My Clippings.txt" to the input folder
+3. Copy your Kindle's "My Clippings.txt" to the input folder:
+   ```bash
+   mkdir -p .anki_vocab_builder/input/kindle
+   cp /path/to/My\ Clippings.txt .anki_vocab_builder/input/kindle/
+   ```
 
 4. Generate Anki cards:
    ```bash
@@ -38,9 +54,25 @@ A tool to convert Kindle highlights into Anki flashcards using GPT-4.
 
 5. Import the generated deck (output/kindle_highlights.apkg) into Anki
 
-## For Developers
+## Card Types
 
-### Project Structure
+### Type-In Cards (Vocabulary Focus)
+- Front shows context with blank word
+- Back includes:
+  - Correct answer with typing feedback
+  - Word definition and usage examples
+  - Synonyms and antonyms
+  - Complete word family
+
+### Q&A Cards (Concept Focus)
+- Front shows conceptual question
+- Back includes:
+  - Concise answer
+  - Supporting quotes from source
+  - Related key terms and concepts
+  - Additional context
+
+## Project Structure
 
 ```
 anki_vocab_builder/
@@ -115,9 +147,11 @@ anki_vocab_builder/
 
 ## Roadmap
 
-- [ ] Kindle highlights integration
+- [x] Kindle highlights integration
+- [x] Modern card design with responsive layout
+- [x] GPT-4 powered quiz generation
 - [ ] iOS reading app integration
-- [ ] Image support for cards
+- [ ] Audio pronunciation support
 - [ ] Custom dictionary sources
 - [ ] GUI for word management
 

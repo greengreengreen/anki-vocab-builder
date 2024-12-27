@@ -19,27 +19,13 @@ def sample_type_in_quiz():
         }
     )
 
-@pytest.fixture
-def sample_qa_quiz():
-    return QAQuiz(
-        question="What is the main theme of the book?",
-        answer="The importance of persistence",
-        source="Test Book (Author)",
-        quotes=["Success comes from persistence.", "Never give up."],
-        key_terms=[{
-            "term": "persistence",
-            "definition": "Continuing despite difficulties",
-            "usage": "His persistence led to success"
-        }],
-        related_concepts=["determination", "grit", "resilience"]
-    )
-
 def test_type_in_template():
     template = ModelTemplates.get_template(TypeInQuiz)
     
     # Test front template
     assert "{{type:Answer}}" in template["qfmt"]
     assert "{{Source}}" in template["qfmt"]
+    assert "type-prompt" in template["qfmt"]
     
     # Test back template
     assert "{{Meaning}}" in template["afmt"]
@@ -77,8 +63,24 @@ def test_css_contains_required_styles():
         ".word-family",
         ".quotes",
         ".key-terms",
-        ".related"
+        ".related",
+        "@media (max-width: 640px)"  # New mobile responsive style
     ]
     
     for style in required_styles:
-        assert style in css 
+        assert style in css
+
+def test_css_contains_modern_design_elements():
+    css = ModelTemplates.get_css()
+    
+    modern_elements = [
+        "font-family: 'Inter'",
+        "linear-gradient",
+        "border-radius",
+        "box-shadow",
+        "background-color: #F7FAFC",
+        "font-weight: 600"
+    ]
+    
+    for element in modern_elements:
+        assert element in css 
