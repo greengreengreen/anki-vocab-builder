@@ -66,7 +66,7 @@
 
 ### Type-In Cards (Vocabulary Focus)
 <p align="center">
-  <img src="docs/assets/type-in-card.png" alt="Type-In Card Example" width="400">
+  <img src="docs/assets/type-in-demo.gif" alt="Type-In Card Demo" width="400">
 </p>
 
 - Front shows context with blank word
@@ -78,7 +78,7 @@
 
 ### Q&A Cards (Concept Focus)
 <p align="center">
-  <img src="docs/assets/qa-card.png" alt="Q&A Card Example" width="400">
+  <img src="docs/assets/qa-demo.gif" alt="Q&A Card Demo" width="400">
 </p>
 
 - Front shows conceptual question
@@ -93,6 +93,7 @@
 - [x] Kindle highlights integration
 - [x] Modern card design
 - [x] GPT-4 powered generation
+- [ ] Custom prompts and card types
 - [ ] Deduplication support
 - [ ] Clipboard integration
 - [ ] Audio pronunciation
